@@ -12,12 +12,13 @@
 #include "canReceive.h"
 #include "../Inc/processCAN.h"
 
-spi_device_handle_t brake_ir_temp;
-spi_device_handle_t brake_press;
-spi_device_handle_t wheel_enc;
-spi_device_handle_t bellcrank_rot_enc;
-spi_device_handle_t hall_effect;
-spi_device_handle_t mc_flow;
+
+spi_device_handle_t wheel_enc; //External DAC (double check)
+spi_device_handle_t bellcrank_rot_enc; //External DAC
+spi_device_handle_t hall_effect; //External DAC
+dac_oneshot_handle_t brake_ir_temp; //Internal DAC (Double Check)
+dac_oneshot_handle_t brake_press; //Internal DAC
+//spi_device_handle_t mc_flow; //PWM (Double check)
 
 void taskRegister (void)
 {
@@ -105,6 +106,73 @@ esp_err_t CAN_init (void) {
 
 esp_err_t spi_init(void) {
     printf("Initializing SPI bus");
+
+    esp_err_t ret = ESP_OK;
+
+    memset(&brake_press, 0, sizeof(spi_device_handle_t));
+    memset(&wheel_enc, 0, sizeof(spi_device_handle_t));
+    memset(&bellcrank_rot_enc, 0, sizeof(spi_device_handle_t));
+    memset(&brake_press, 0, sizeof(dac_oneshot_handle_t));
+    memset(&brake_ir_temp, 0, sizeof(dac_oneshot_handle_t));
+    //memset(&mc_flow, 0, sizeof(NO IDEA));
+
+    spi_bus_config_t BusCfg = {
+        .mosi_io_num = SPI_MOSI_PIN,
+        .sclk_io_num = SPI_CLK_PIN,
+        .quadwp_io_num = NOT_USED,
+        .quadhd_io_num = NOT_USED,
+    };
+
+    //Verify if External DAC or not
+    spi_device_interface_config_t wheel_enc_cfg = {
+        .clock_speed_hz = 20*HZ_PER_MHZ,           //Clock out at 20 MHz
+        .mode = 0,                                //SPI mode 0
+        .spics_io_num = WHE_ENC,            //CS pin
+        .queue_size = MAX_SPI_QUEUE_SIZE,                          //We want to be able to queue 7 transactions at a time
+    };
+
+    spi_device_interface_config_t bc_rot_enc_cfg = {
+        .clock_speed_hz = 20*HZ_PER_MHZ,           //Clock out at 20 MHz
+        .mode = 0,                                //SPI mode 0
+        .spics_io_num = WHE_ENC,            //CS pin
+        .queue_size = MAX_SPI_QUEUE_SIZE,                          //We want to be able to queue 7 transactions at a time
+    };
+    
+    //Verify if External DAC or not
+    spi_device_interface_config_t hall_effect_cfg = {
+        .clock_speed_hz = 20*HZ_PER_MHZ,           //Clock out at 20 MHz
+        .mode = 0,                                //SPI mode 0
+        .spics_io_num = BC_ROT_ENC,            //CS pin
+        .queue_size = MAX_SPI_QUEUE_SIZE,                          //We want to be able to queue 7 transactions at a time
+    };
+    
+    
+
+    dac_oneshot_config_t brake_pres_raw_cfg = {
+        .chan_id = DAC_CHAN_0,
+    };
+
+    dac_oneshot_config_t brake_ir_temp_cfg = {
+        .chan_id = DAC_CHAN_1,
+    };
+
+    ret = spi_bus_initialize(SPI2_HOST, &BusCfg, SPI_DMA_CH_AUTO);
+    if(ret != ESP_OK){
+        printf("failed to init SPI bus %d\r\n", ret);
+        return ESP_FAIL;
+    }
+    
+    //Conditionals for SPI stuff coming soon
+
+    ret = dac_oneshot_new_channel(&brake_pres_raw_cfg, &brake_pres_raw);
+    if(ret != ESP_OK){
+        printf("failed to start dac channel for brake pres raw %d\r\n", ret);
+        return ESP_FAIL;
+    } 
+
+
+
+
     return ESP_OK;
 }
 
