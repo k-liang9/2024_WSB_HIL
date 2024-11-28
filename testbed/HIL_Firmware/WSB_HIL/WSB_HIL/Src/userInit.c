@@ -12,6 +12,13 @@
 #include "canReceive.h"
 #include "../Inc/processCAN.h"
 
+spi_device_handle_t brake_ir_temp;
+spi_device_handle_t brake_press;
+spi_device_handle_t wheel_enc;
+spi_device_handle_t bellcrank_rot_enc;
+spi_device_handle_t hall_effect;
+spi_device_handle_t mc_flow;
+
 void taskRegister (void)
 {
     BaseType_t xReturned = pdPASS;
@@ -97,6 +104,7 @@ esp_err_t CAN_init (void) {
 }
 
 esp_err_t spi_init(void) {
+    printf("Initializing SPI bus");
     return ESP_OK;
 }
 
