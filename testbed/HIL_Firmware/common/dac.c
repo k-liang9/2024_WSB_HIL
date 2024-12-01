@@ -62,7 +62,7 @@ esp_err_t set6551Voltage (float voltage, DacId_E id)
     }
     else if(voltage < 0.0f)
     {
-        printf("volage must be greater than 0\r\n");
+        printf("voltage must be greater than 0\r\n");
         voltage = 0.0f;
     }
     
@@ -110,7 +110,7 @@ esp_err_t set6551Voltage (float voltage, DacId_E id)
 
     if(fault != ESP_OK)
     {
-        printf("Failed transmit data\n");
+        printf("Failed to transmit data\n");
         return ESP_FAIL;
     }
     
