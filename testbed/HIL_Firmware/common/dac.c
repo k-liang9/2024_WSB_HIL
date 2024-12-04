@@ -19,9 +19,9 @@ twai_message_t message_status = {
 const double DAC_CONVERSION_12_BIT = (V_REF_MV / 1000) / MAX_12_BIT_VAL;
 const double DAC_CONVERSION_8_BIT = (V_REF_MV / 1000) / MAX_8_BIT_VAL;
 
-dac_oneshot_handle_t brake_pres_raw;
+//dac_oneshot_handle_t brake_pres_raw;
 
-esp_err_t setDacVoltage(float voltage)
+esp_err_t setDacVoltage(dac_oneshot_handle_t general_sensor, float voltage)
 {
     esp_err_t fault = ESP_OK;
 
@@ -39,14 +39,14 @@ esp_err_t setDacVoltage(float voltage)
 
     uint8_t output_voltage = (voltage / 1000) / DAC_CONVERSION_8_BIT;
     
-    fault = dac_oneshot_output_voltage(brake_pres_raw, output_voltage);
+    fault = dac_oneshot_output_voltage(general_sensor, output_voltage);
     if(fault != ESP_OK)
     {
-        printf("Failed to set brake pres raw %d\r\n", fault);
+        printf("Failed to set dac sensor %d\r\n", fault);
         return ESP_FAIL; 
     }
     
-    message_status.data[0] = BRAKE_PRES_RAW_DAC_SET;
+    message_status.data[0] = GENERAL_DAC_SET; //???
     twai_transmit(&message_status, portMAX_DELAY);
     printf("setting voltage to %fmV in channel 1\n", voltage);
     return ESP_OK;
@@ -84,7 +84,8 @@ esp_err_t set6551Voltage (float voltage, DacId_E id)
     };
 
     esp_err_t fault = ESP_OK;
-
+    
+    //Add DAC sensor as a case
     switch (id)
     {
         case DacId_BrakePos:

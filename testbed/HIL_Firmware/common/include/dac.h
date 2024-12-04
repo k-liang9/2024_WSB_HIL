@@ -12,14 +12,18 @@
 #define MAX_12_BIT_VAL 2048
 #define MAX_8_BIT_VAL 255
 #define MESSAGE_STATUS_CAN_ID 0x8060F02
-#define BRAKE_PRES_RAW_DAC_SET 1
+#define GENERAL_DAC_SET 1 
+
+//Add DAC Sensor
 #define BRAKE_POS_DAC_SET 2
 #define STEER_RAW_DAC_SET 4
 #define THROTTLE_A_DAC_SET 8
 #define THROTTLE_B_DAC_SET 16
+
 #define EXTENDED_MSG 1              //CAN message has extended ID
 #define CAN_MSG_DATA_SIZE 1     //size in bytes
 
+//Add DAC Sensor
 typedef enum DacId_E{
     DacId_ThrottleA = 0,
     DacId_ThrottleB,
