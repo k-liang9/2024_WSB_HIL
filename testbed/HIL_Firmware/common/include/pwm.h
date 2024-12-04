@@ -4,5 +4,6 @@
 #include "driver/ledc.h" //api for pwm outputs
 
 esp_err_t encoder_switch_directions();
+esp_err_t pwm_init();
 
 #endif //INC_2024_WSB_HIL_PWM_H
