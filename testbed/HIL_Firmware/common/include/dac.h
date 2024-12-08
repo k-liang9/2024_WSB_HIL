@@ -12,9 +12,9 @@
 #define MAX_12_BIT_VAL 2048
 #define MAX_8_BIT_VAL 255
 #define MESSAGE_STATUS_CAN_ID 0x8060F02
-#define GENERAL_DAC_SET 1 
+#define BRAKE_PRES_RAW_DAC_SET 1 //todo: this is for vcu
 
-//Add DAC Sensor
+//todo: add brakeir sensor
 #define BRAKE_POS_DAC_SET 2
 #define STEER_RAW_DAC_SET 4
 #define THROTTLE_A_DAC_SET 8
@@ -23,7 +23,7 @@
 #define EXTENDED_MSG 1              //CAN message has extended ID
 #define CAN_MSG_DATA_SIZE 1     //size in bytes
 
-//Add DAC Sensor
+//todo: Add WSB Sensors
 typedef enum DacId_E{
     DacId_ThrottleA = 0,
     DacId_ThrottleB,
@@ -31,7 +31,7 @@ typedef enum DacId_E{
     DacId_SteerRaw,
 } DacId_E;
 
-esp_err_t setDacVoltage(float voltage);
+esp_err_t setDacVoltage(dac_oneshot_handle_t *channel, uint8_t dac_set, twai_message_t *can_msg, float voltage);
 esp_err_t set6551Voltage (float voltage, DacId_E id);
 
 extern spi_device_handle_t throttle_A;

@@ -16,6 +16,7 @@ spi_device_handle_t throttle_A;
 spi_device_handle_t throttle_B;
 spi_device_handle_t brake_pos;
 spi_device_handle_t steer_raw;
+dac_oneshot_handle_t brake_pres_raw;
 
 void taskRegister (void)
 {
