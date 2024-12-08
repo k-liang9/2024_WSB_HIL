@@ -12,6 +12,12 @@
 static uint16_t byte_1 = 0U;
 static uint16_t byte_2 = 0U;
 
+twai_message_t message_status = {
+        .identifier = MESSAGE_STATUS_CAN_ID,
+        .extd = EXTENDED_MSG,
+        .data_length_code = CAN_MSG_DATA_SIZE,
+};
+
 //reassemble data into a 16 bit uint to pass in desired voltage into set dac function
 void process_rx_task (void * pvParameters)
 {
@@ -28,35 +34,35 @@ void process_rx_task (void * pvParameters)
                 byte_2 = can_msg.data[1];
                 byte_2 = byte_2 << 8;
                 byte_2 |= byte_1;
-                set6551Voltage(byte_2, DacId_BrakePos);
+                set6551Voltage(byte_2, DacId_BrakePos, BRAKE_POS_DAC_SET, &brake_pos, &message_status);
                 break;
             case BRAKE_PRES_RAW_CAN_ID:     
                 byte_1 = can_msg.data[0];
                 byte_2 = can_msg.data[1];
                 byte_2 = byte_2 << 8;
                 byte_2 |= byte_1;
-                setDacVoltage(byte_2);
+                setDacVoltage(&brake_pres_raw, BRAKE_PRES_RAW_DAC_SET, &message_status, byte_2);
                 break;
             case THROTTLE_A_CAN_ID:     
                 byte_1 = can_msg.data[0];
                 byte_2 = can_msg.data[1];
                 byte_2 = byte_2 << 8;
                 byte_2 |= byte_1;
-                set6551Voltage(byte_2, DacId_ThrottleA);
+                set6551Voltage(byte_2, DacId_ThrottleA, THROTTLE_A_DAC_SET, &throttle_A, &message_status);
                 break;
             case THROTTLE_B_CAN_ID:    
                 byte_1 = can_msg.data[0];
                 byte_2 = can_msg.data[1];
                 byte_2 = byte_2 << 8;
                 byte_2 |= byte_1;
-                set6551Voltage(byte_2, DacId_ThrottleB);
+                set6551Voltage(byte_2, DacId_ThrottleB, THROTTLE_B_DAC_SET, &throttle_B, &message_status);
                 break;
             case STEER_RAW_CAN_ID:     
                 byte_1 = can_msg.data[0];
                 byte_2 = can_msg.data[1];
                 byte_2 = byte_2 << 8;
                 byte_2 |= byte_1;
-                set6551Voltage(byte_2, DacId_SteerRaw);
+                set6551Voltage(byte_2, DacId_SteerRaw, STEER_RAW_DAC_SET, &steer_raw, &message_status);
                 break;
             default:
                 printf("CAN ID not recognized %ld\r\n", can_msg.identifier);

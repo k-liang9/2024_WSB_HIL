@@ -16,6 +16,7 @@ spi_device_handle_t throttle_A;
 spi_device_handle_t throttle_B;
 spi_device_handle_t brake_pos;
 spi_device_handle_t steer_raw;
+dac_oneshot_handle_t brake_pres_raw;
 
 void taskRegister (void)
 {
@@ -188,28 +189,28 @@ esp_err_t spi_init(void)
     } 
 
 
-    if(set6551Voltage(0, DacId_ThrottleA) != ESP_OK)
+    if(set6551Voltage(0, DacId_ThrottleA, THROTTLE_A_DAC_SET, &throttle_A, &message_status) != ESP_OK)
     {
         printf("failed to init throttle A DAC\r\n");
         return ESP_FAIL;
     }
-    if(set6551Voltage(0, DacId_ThrottleB) != ESP_OK)
+    if(set6551Voltage(0, DacId_ThrottleB, THROTTLE_B_DAC_SET, &throttle_B, &message_status) != ESP_OK)
     {
         printf("failed to init throttle B DAC\r\n");
         return ESP_FAIL;
     }
-    if(set6551Voltage(0, DacId_BrakePos) != ESP_OK)
+    if(set6551Voltage(0, DacId_BrakePos, BRAKE_POS_DAC_SET, &brake_pos, &message_status) != ESP_OK)
     {
         printf("failed to init brake position DAC\r\n");
         return ESP_FAIL;
     }
-    if(set6551Voltage(0, DacId_SteerRaw) != ESP_OK)
+    if(set6551Voltage(0, DacId_SteerRaw, STEER_RAW_DAC_SET, &steer_raw, &message_status) != ESP_OK)
     {
         printf("failed to init steering raw DAC\r\n");
         return ESP_FAIL;
     }
 
-    if(setDacVoltage(0) != ESP_OK)
+    if(setDacVoltage(&brake_pres_raw, BRAKE_PRES_RAW_DAC_SET, &message_status, 0) != ESP_OK)
     {
         printf("failed to init brake pres raw DAC\r\n");
         return ESP_FAIL;

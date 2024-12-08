@@ -12,6 +12,15 @@
 #define NOT_USED -1
 #define MAX_SPI_QUEUE_SIZE 7
 
+#include "driver/spi_master.h"
+#include "driver/dac_oneshot.h"
+
+extern spi_device_handle_t throttle_A;
+extern spi_device_handle_t throttle_B;
+extern spi_device_handle_t brake_pos;
+extern spi_device_handle_t steer_raw;
+extern dac_oneshot_handle_t brake_pres_raw;
+
 void taskRegister (void);
 esp_err_t CAN_init (void);
 esp_err_t spi_init (void);
