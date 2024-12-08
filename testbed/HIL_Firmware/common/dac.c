@@ -44,7 +44,7 @@ esp_err_t setDacVoltage(dac_oneshot_handle_t *channel, uint8_t dac_set, twai_mes
     return ESP_OK;
 }
 
-esp_err_t set6551Voltage (float voltage, DacId_E id)
+esp_err_t set6551Voltage (float voltage, DacId_E id, uint8_t dac_set, spi_device_handle_t *spi_device_handle, twai_message_t *can_msg)
 {
     //above Vref, set to Vref, below 0 set to 0 
     if(voltage > V_REF_MV)
@@ -76,37 +76,17 @@ esp_err_t set6551Voltage (float voltage, DacId_E id)
     };
 
     esp_err_t fault = ESP_OK;
-    
-    //Add DAC sensor as a case
-    switch (id)
-    {
-        case DacId_BrakePos:
-            fault = spi_device_transmit(brake_pos, &trans);
-            message_status.data[0] = BRAKE_POS_DAC_SET;
-            break;
-        case DacId_SteerRaw:
-            fault = spi_device_transmit(steer_raw, &trans);
-            message_status.data[0] = STEER_RAW_DAC_SET;
-            break;
-        case DacId_ThrottleA:
-            fault = spi_device_transmit(throttle_A, &trans);
-            message_status.data[0] = THROTTLE_A_DAC_SET;
-            break;
-        case DacId_ThrottleB:
-            fault = spi_device_transmit(throttle_B, &trans);
-            message_status.data[0] = THROTTLE_B_DAC_SET;
-            break;
-        default:
-            printf("unknown dac ID %d", id);
-            break;
-    }
+
+    can_msg->data[0] = dac_set;
+    fault = spi_device_transmit(*spi_device_handle, &trans);
+    //is dac id needed?
 
     if(fault != ESP_OK)
     {
-        printf("Failed transmit data\n");
+        printf("Failed to transmit data\n");
         return ESP_FAIL;
     }
     
-    twai_transmit(&message_status, portMAX_DELAY);
+    twai_transmit(can_msg, portMAX_DELAY);
     return ESP_OK;
 }
